@@ -1,57 +1,150 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Activity, LogOut, User } from 'lucide-react';
+import { FileText, Activity, Home, User, LogOut, X, Map, Bell, Newspaper, LayoutGrid, Sun } from 'lucide-react';
 import Layout from '../components/Layout';
-import Button from '../components/Button';
 
 export default function FarmerDashboard() {
     const navigate = useNavigate();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     return (
-        <Layout className="bg-surface">
-            <div className="flex justify-between items-center mb-8 pt-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-primary m-0">Hello, Farmer</h1>
-                    <p className="text-sm text-text-muted">Welcome to CropAid</p>
+        <Layout className="bg-bg-surface p-0 pb-24 font-sans text-text-main">
+            {/* Header / Top Bar */}
+            <div className="bg-primary text-white p-5 pt-8 rounded-b-3xl shadow-md relative z-10">
+                <div className="flex justify-between items-center mb-6">
+                    <button onClick={toggleSidebar} className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+                        <User size={24} className="text-white" />
+                    </button>
+                    <div className="text-right">
+                        <h1 className="text-xl font-bold m-0">Hello, Farmer</h1>
+                        <p className="text-xs text-white/80 m-0">Norala, South Cotabato</p>
+                    </div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-primary-bg flex items-center justify-center border border-primary">
-                    <User size={20} className="text-primary" />
+
+                {/* Weather / Status Card */}
+                <div className="bg-white text-text-main p-4 rounded-xl shadow-lg flex justify-between items-center mb-[-40px]">
+                    <div className="flex flex-col">
+                        <span className="text-xs text-text-muted font-bold uppercase tracking-wider">Current Weather</span>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Sun size={24} className="text-yellow-500" />
+                            <span className="text-2xl font-bold">32°C</span>
+                        </div>
+                        <span className="text-[10px] text-text-muted">Sunny, Low Chance of Rain</span>
+                    </div>
+                    <div className="h-10 w-[1px] bg-gray-200"></div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-xs text-text-muted font-bold uppercase tracking-wider">Active Reports</span>
+                        <span className="text-2xl font-bold text-primary">0</span>
+                        <span className="text-[10px] text-text-muted">No pending issues</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 mb-auto">
-                <div
-                    onClick={() => navigate('/report')}
-                    className="bg-white p-6 rounded-md shadow-md flex flex-col items-center text-center cursor-pointer transition-transform active:scale-95 border-l-4 border-l-primary hover:shadow-lg"
-                >
-                    <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mb-4">
-                        <FileText size={32} className="text-primary" />
+            {/* Main Content Area */}
+            <div className="mt-16 px-5 py-4">
+                {/* Quick Actions Grid (Updated) */}
+                <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Quick Services</h3>
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                    <div className="flex flex-col items-center gap-2" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-sm cursor-pointer hover:bg-orange-200 transition-colors">
+                            <Map size={24} />
+                        </div>
+                        <span className="text-[10px] font-medium text-center leading-tight">Farm<br />Map</span>
                     </div>
-                    <h2 className="text-lg font-bold text-text-main mb-1">Report Issue</h2>
-                    <p className="text-sm text-text-muted">Submit flood or pest reports</p>
+                    <div className="flex flex-col items-center gap-2" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 shadow-sm cursor-pointer hover:bg-red-200 transition-colors">
+                            <Bell size={24} />
+                        </div>
+                        <span className="text-[10px] font-medium text-center leading-tight">Advisories</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm cursor-pointer hover:bg-blue-200 transition-colors">
+                            <Newspaper size={24} />
+                        </div>
+                        <span className="text-[10px] font-medium text-center leading-tight">News</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2" onClick={toggleSidebar}>
+                        <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors">
+                            <LayoutGrid size={24} />
+                        </div>
+                        <span className="text-[10px] font-medium text-center leading-tight">More</span>
+                    </div>
                 </div>
 
-                <div
-                    onClick={() => navigate('/status')}
-                    className="bg-white p-6 rounded-md shadow-md flex flex-col items-center text-center cursor-pointer transition-transform active:scale-95 border-l-4 border-blue-500 hover:shadow-lg"
-                >
-                    <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4">
-                        <Activity size={32} className="text-blue-500" />
-                    </div>
-                    <h2 className="text-lg font-bold text-text-main mb-1">Report Status</h2>
-                    <p className="text-sm text-text-muted">Track your submissions</p>
+                {/* Promo / Info Section */}
+                <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Latest Advisory</h3>
+                <div className="bg-gradient-to-r from-primary to-primary-light text-white p-4 rounded-xl shadow-md mb-4">
+                    <h4 className="font-bold text-sm mb-1">Pest Alert: Rice Black Bug</h4>
+                    <p className="text-xs opacity-90">Farmers in Brgy. San Jose are advised to monitor fields due to reported sightings.</p>
                 </div>
             </div>
 
-            <Button
-                variant="secondary"
-                onClick={() => navigate('/login')}
-                className="mt-4 bg-red-100 text-red-600 hover:bg-red-200"
-                style={{ backgroundColor: '#FEE2E2', color: '#DC2626' }}
-            >
-                <LogOut size={18} className="mr-2" />
-                Logout
-            </Button>
+            {/* Sidebar (Full Screen Overlay) */}
+            <div className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                {/* Backdrop */}
+                <div className="absolute inset-0 bg-primary opacity-95" onClick={toggleSidebar}></div>
+
+                {/* Sidebar Content */}
+                <div className="absolute inset-0 flex flex-col p-6 text-white">
+                    <button onClick={toggleSidebar} className="self-end p-2 bg-white/10 rounded-full mb-8 hover:bg-white/20">
+                        <X size={24} />
+                    </button>
+
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 text-primary shadow-lg border-4 border-white/20">
+                            <User size={40} />
+                        </div>
+                        <h2 className="text-2xl font-bold">Juan Dela Cruz</h2>
+                        <p className="text-white/70 text-sm">RSBSA: 12-34-56-789</p>
+                    </div>
+
+                    <div className="flex-1">
+                        <div className="space-y-4">
+                            <div className="p-4 bg-white/10 rounded-lg flex items-center gap-3">
+                                <User size={20} />
+                                <span className="font-medium">My Profile</span>
+                            </div>
+                            <div className="p-4 bg-white/10 rounded-lg flex items-center gap-3">
+                                <Activity size={20} />
+                                <span className="font-medium">History</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="w-full bg-white text-red-600 font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg mt-auto"
+                    >
+                        <LogOut size={20} />
+                        LOGOUT
+                    </button>
+                </div>
+            </div>
+
+            {/* Bottom Floating Navbar (GCash Style) */}
+            <div className="fixed bottom-0 w-full max-w-[480px] bg-white border-t border-gray-100 flex justify-between items-end px-6 pb-2 pt-2 shadow-[0_-5px_10px_rgba(0,0,0,0.02)] z-40 h-[70px]">
+                {/* Left: Report */}
+                <div className="flex-1 flex flex-col items-center justify-end h-full py-1 cursor-pointer text-gray-400 hover:text-primary transition-colors" onClick={() => navigate('/report')}>
+                    <FileText size={24} className="mb-1" />
+                    <span className="text-[10px] font-medium">Report</span>
+                </div>
+
+                {/* Center: Home (Raised) */}
+                <div className="relative -top-6">
+                    <div className="w-16 h-16 bg-primary rounded-full border-4 border-bg-surface flex items-center justify-center shadow-lg cursor-pointer transform hover:scale-105 transition-transform" onClick={() => { }}>
+                        <Home size={28} className="text-white" />
+                    </div>
+                </div>
+
+                {/* Right: Status */}
+                <div className="flex-1 flex flex-col items-center justify-end h-full py-1 cursor-pointer text-gray-400 hover:text-primary transition-colors" onClick={() => navigate('/status')}>
+                    <Activity size={24} className="mb-1" />
+                    <span className="text-[10px] font-medium">Status</span>
+                </div>
+            </div>
         </Layout>
     );
 }
