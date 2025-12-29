@@ -181,7 +181,7 @@ export default function Login() {
 
 
             <p
-                onClick={() => navigate('/signup/step1')}
+                onClick={() => navigate('/signup/basic-info')}
                 style={{
                     fontSize: '14px',
                     color: '#2E7D32',

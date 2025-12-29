@@ -31,7 +31,18 @@ export default function AdminDailySummary() {
                         justifyContent: 'space-between'
                     }}>
                         <span>{summary.title}</span>
-                        <span style={{ color: '#2E7D32', fontWeight: 'bold' }}>{summary.count} Reports</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: '#2E7D32', fontWeight: 'bold' }}>{summary.count} Reports</span>
+                            <button style={{
+                                padding: '4px 8px',
+                                backgroundColor: '#2E7D32',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                            }}>VIEW</button>
+                        </div>
                     </div>
                 ))}
             </div>

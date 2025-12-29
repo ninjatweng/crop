@@ -4,8 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Splash from './pages/Splash';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
-import SignupStep1 from './pages/SignupStep1';
-import SignupStep2 from './pages/SignupStep2';
+import SignupBasicInfo from './pages/SignupBasicInfo';
+import SignupFarmInfo from './pages/SignupFarmInfo';
+import SignupAppInfo from './pages/SignupAppInfo';
 import SignupStep3 from './pages/SignupStep3';
 import FarmerDashboard from './pages/FarmerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -26,8 +27,9 @@ function App() {
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin-login" element={<AdminLogin />} />
-        <Route path="/signup/step1" element={<SignupStep1 />} />
-        <Route path="/signup/step2" element={<SignupStep2 />} />
+        <Route path="/signup/basic-info" element={<SignupBasicInfo />} />
+        <Route path="/signup/farm-info" element={<SignupFarmInfo />} />
+        <Route path="/signup/app-info" element={<SignupAppInfo />} />
         <Route path="/signup/step3" element={<SignupStep3 />} />
         <Route path="/dashboard" element={<FarmerDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

@@ -23,17 +23,35 @@ export default function AdminFarmReports() {
             <h1 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Farm Condition Report</h1>
 
             <div style={{ flex: 1, marginBottom: '16px' }}>
-                {reports.map((report) => (
-                    <div key={report.id} style={{
-                        padding: '12px',
-                        borderBottom: '1px solid #eee',
-                        display: 'flex',
-                        justifyContent: 'space-between'
-                    }}>
-                        <span>{report.title}</span>
-                        <span style={{ color: '#757575' }}>{report.date}</span>
+                <div style={{
+                    padding: '12px',
+                    borderBottom: '1px solid #eee',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 'bold' }}>Juan Dela Cruz</span>
+                        <span style={{ fontSize: '12px', color: '#757575' }}>10/27/2023</span>
                     </div>
-                ))}
+                    <span style={{ fontSize: '14px' }}>Purok 1, San Jose</span>
+                    <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '14px' }}>Major Pest Infestation</span>
+                </div>
+
+                <div style={{
+                    padding: '12px',
+                    borderBottom: '1px solid #eee',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 'bold' }}>Pedro Penduko</span>
+                        <span style={{ fontSize: '12px', color: '#757575' }}>10/28/2023</span>
+                    </div>
+                    <span style={{ fontSize: '14px' }}>Purok 2, San Miguel</span>
+                    <span style={{ color: '#1976D2', fontWeight: 'bold', fontSize: '14px' }}>Severe Flooding</span>
+                </div>
             </div>
 
             <button

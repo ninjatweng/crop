@@ -29,10 +29,12 @@ export default function SignupStep3() {
                 marginBottom: '24px'
             }}>Confirm Your Details</h1>
 
-            <div id="tvSummary" style={{ marginBottom: '24px', width: '100%', textAlign: 'center' }}>
+            <div id="tvSummary" style={{ marginBottom: '24px', width: '100%', textAlign: 'left', padding: '0 20px' }}>
                 <p><strong>Email:</strong> {formData.email}</p>
                 <p><strong>Full Name:</strong> {formData.fullName}</p>
-
+                <p><strong>Address:</strong> {formData.address}</p>
+                <p><strong>Farm Location:</strong> {formData.sitio}, {formData.barangay}</p>
+                <p><strong>Province:</strong> {formData.province}</p>
             </div>
 
             <button
