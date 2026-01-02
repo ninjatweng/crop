@@ -112,19 +112,19 @@ export default function FarmerMapPage() {
             }
 
             try {
-                // Fetch farmer's farm data
-                const farmRes = await fetch(`${API_URL}/farmer/farm`, {
+                // Fetch farmer's profile to get farm data
+                const profileRes = await fetch(`${API_URL}/farmer/me`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (farmRes.ok) {
-                    const farm = await farmRes.json();
-                    if (farm.latitude && farm.longitude) {
+                if (profileRes.ok) {
+                    const profile = await profileRes.json();
+                    if (profile.farm_latitude && profile.farm_longitude) {
                         setFarmData({
                             name: 'My Farm',
-                            lat: farm.latitude,
-                            lng: farm.longitude,
-                            size: farm.size_hectares ? `${farm.size_hectares} hectares` : 'Unknown',
-                            barangay: farm.barangay
+                            lat: parseFloat(profile.farm_latitude),
+                            lng: parseFloat(profile.farm_longitude),
+                            size: profile.farm_size_hectares ? `${profile.farm_size_hectares} hectares` : 'Unknown',
+                            barangay: profile.barangay || profile.farm_barangay
                         });
                     }
                 }
@@ -135,7 +135,9 @@ export default function FarmerMapPage() {
                 });
                 if (reportsRes.ok) {
                     const reportsData = await reportsRes.json();
-                    setReports(reportsData.filter(r => r.latitude && r.longitude));
+                    // Handle both array and object with reports property
+                    const reportsArray = Array.isArray(reportsData) ? reportsData : (reportsData.reports || reportsData.history || []);
+                    setReports(reportsArray.filter(r => r.latitude && r.longitude));
                 }
             } catch (err) {
                 console.error('Failed to fetch map data:', err);

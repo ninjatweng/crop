@@ -11,7 +11,25 @@ export default function AdminMapPage() {
     const [photoData, setPhotoData] = useState(null);
 
     const handleReportClick = (report) => {
-        setSelectedReport(report);
+        // Parse details if it's a string
+        let details = {};
+        try {
+            details = typeof report.details === 'string' ? JSON.parse(report.details || '{}') : (report.details || {});
+        } catch (e) {
+            details = {};
+        }
+        
+        // Normalize the report data
+        const normalizedReport = {
+            ...report,
+            farmer_name: report.farmer_name || `${report.first_name || ''} ${report.last_name || ''}`.trim() || 'Unknown',
+            location: report.location || details.barangay || 'Unknown location',
+            crop_planted: report.crop_planted || details.cropType || 'Not specified',
+            affected_area: report.affected_area || details.affectedArea || 0,
+            description: report.description || details.description || details.notes || ''
+        };
+        
+        setSelectedReport(normalizedReport);
         setPhotoData(null);
     };
 
@@ -115,7 +133,7 @@ export default function AdminMapPage() {
                                 <p className="text-gray-800">{selectedReport.location}</p>
                                 {selectedReport.latitude && selectedReport.longitude && (
                                     <p className="text-xs text-gray-500 mt-1">
-                                        GPS: {selectedReport.latitude.toFixed(6)}, {selectedReport.longitude.toFixed(6)}
+                                        GPS: {parseFloat(selectedReport.latitude).toFixed(6)}, {parseFloat(selectedReport.longitude).toFixed(6)}
                                     </p>
                                 )}
                             </div>
