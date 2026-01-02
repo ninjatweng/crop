@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, MapPin, Phone } from 'lucide-react';
+import { Search, Filter, MoreVertical, MapPin, Phone, Eye } from 'lucide-react';
 import { useAuth, API_URL } from '../../context/AuthContext';
 import { useOutletContext } from 'react-router-dom';
 import { MOCK_DATA } from '../../config/mockData';
+import FarmerDetailModal from '../../components/FarmerDetailModal';
 
 export default function AdminFarmers() {
     const { token, isMockMode } = useAuth();
@@ -11,6 +12,7 @@ export default function AdminFarmers() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
+    const [selectedFarmer, setSelectedFarmer] = useState(null);
 
     // Inject "Add New Farmer" button into header
     useEffect(() => {
@@ -68,6 +70,12 @@ export default function AdminFarmers() {
 
         if (token || isMockMode) fetchFarmers();
     }, [token, isMockMode]);
+
+    const handleStatusUpdate = (farmerId, newStatus) => {
+        setFarmers(prev => prev.map(f => 
+            f.id === farmerId ? { ...f, is_active: newStatus } : f
+        ));
+    };
 
     const filteredFarmers = farmers.filter(f => {
         const term = searchTerm.toLowerCase();
@@ -162,6 +170,13 @@ export default function AdminFarmers() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
+                                        <button 
+                                            onClick={() => setSelectedFarmer(farmer)}
+                                            className="text-primary hover:text-primary/80 p-1.5 rounded-md hover:bg-primary/10 transition-colors mr-1"
+                                            title="View Details"
+                                        >
+                                            <Eye size={16} />
+                                        </button>
                                         <button className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors">
                                             <MoreVertical size={16} />
                                         </button>
@@ -181,6 +196,15 @@ export default function AdminFarmers() {
                     </div>
                 </div>
             </div>
+
+            {/* Farmer Detail Modal */}
+            {selectedFarmer && (
+                <FarmerDetailModal 
+                    farmer={selectedFarmer} 
+                    onClose={() => setSelectedFarmer(null)}
+                    onStatusUpdate={handleStatusUpdate}
+                />
+            )}
         </div>
     );
 }

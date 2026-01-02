@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, AlertTriangle, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth, API_URL } from '../../context/AuthContext';
 import { MOCK_DATA } from '../../config/mockData';
+import ReportDetailModal from '../../components/ReportDetailModal';
 
 export default function AdminReports() {
     const { token, isMockMode } = useAuth();
@@ -10,6 +11,7 @@ export default function AdminReports() {
     const [activeTab, setActiveTab] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState(null);
+    const [selectedReport, setSelectedReport] = useState(null);
 
     const fetchReports = async () => {
         setLoading(true);
@@ -190,6 +192,15 @@ export default function AdminReports() {
                                 </div>
 
                                 <div className="flex items-center gap-3 md:border-l md:border-gray-100 md:pl-6 shrink-0 pt-4 md:pt-0 border-t border-gray-100 mt-2 md:mt-0">
+                                    {/* View Button */}
+                                    <button
+                                        onClick={() => setSelectedReport(report)}
+                                        className="flex flex-col items-center gap-1 text-gray-600 hover:text-gray-700 transition-colors p-2 rounded-md hover:bg-gray-100"
+                                    >
+                                        <Eye size={20} />
+                                        <span className="text-[10px] uppercase font-bold">View</span>
+                                    </button>
+
                                     {report.status === 'pending' && (
                                         <>
                                             <button
@@ -223,6 +234,18 @@ export default function AdminReports() {
                     );
                 })}
             </div>
+
+            {/* Report Detail Modal */}
+            {selectedReport && (
+                <ReportDetailModal 
+                    report={selectedReport} 
+                    onClose={() => setSelectedReport(null)}
+                    onStatusUpdate={(id, newStatus) => {
+                        handleStatusUpdate(id, newStatus);
+                        setSelectedReport(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

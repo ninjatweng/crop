@@ -20,8 +20,11 @@ import UnifiedReport from './pages/UnifiedReport';
 import ReportStatus from './pages/ReportStatus';
 import PestReport from './pages/PestReport';
 import FloodReport from './pages/FloodReport';
+import DroughtReport from './pages/DroughtReport';
 import Confirmation from './pages/Confirmation';
 import ReportConfirmation from './pages/ReportConfirmation';
+import FarmerProfile from './pages/FarmerProfile';
+import NotificationsPage from './pages/NotificationsPage';
 import AdminFarmReports from './pages/AdminFarmReports';
 import AdminDailySummary from './pages/AdminDailySummary';
 import AdminOrganizedReport from './pages/AdminOrganizedReport';
@@ -47,6 +50,8 @@ function App() {
             <Route path="/dashboard" element={<FarmerDashboard />} />
             <Route path="/report" element={<UnifiedReport />} />
             <Route path="/status" element={<ReportStatus />} />
+            <Route path="/profile" element={<FarmerProfile />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
 
           {/* Admin Routes with Sidebar Layout */}
@@ -61,6 +66,7 @@ function App() {
 
           <Route path="/report/pest" element={<PestReport />} />
           <Route path="/report/flood" element={<FloodReport />} />
+          <Route path="/report/drought" element={<DroughtReport />} />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/report-confirmation" element={<ReportConfirmation />} />
           {/* Legacy or specific standalone admin pages if needed, can keep or remove later */}

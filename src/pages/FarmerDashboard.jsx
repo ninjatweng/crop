@@ -151,11 +151,11 @@ export default function FarmerDashboard() {
                         </div>
                         <span className="text-[10px] font-medium text-center leading-tight">Farm<br />Map</span>
                     </div>
-                    <div className="flex flex-col items-center gap-2" onClick={() => { }}>
+                    <div className="flex flex-col items-center gap-2" onClick={() => navigate('/notifications')}>
                         <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 shadow-sm cursor-pointer hover:bg-red-200 transition-colors">
                             <Bell size={24} />
                         </div>
-                        <span className="text-[10px] font-medium text-center leading-tight">Advisories</span>
+                        <span className="text-[10px] font-medium text-center leading-tight">Notifications</span>
                     </div>
                     <div className="flex flex-col items-center gap-2" onClick={() => { }}>
                         <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm cursor-pointer hover:bg-blue-200 transition-colors">
@@ -201,13 +201,17 @@ export default function FarmerDashboard() {
 
                             <div className="flex-1">
                                 <div className="space-y-4">
-                                    <div className="p-4 bg-white/10 rounded-lg flex items-center gap-3">
+                                    <div onClick={() => { toggleSidebar(); navigate('/profile'); }} className="p-4 bg-white/10 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-white/20 transition-colors">
                                         <User size={20} />
                                         <span className="font-medium">My Profile</span>
                                     </div>
-                                    <div className="p-4 bg-white/10 rounded-lg flex items-center gap-3">
+                                    <div onClick={() => { toggleSidebar(); navigate('/status'); }} className="p-4 bg-white/10 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-white/20 transition-colors">
                                         <Activity size={20} />
-                                        <span className="font-medium">History</span>
+                                        <span className="font-medium">Report History</span>
+                                    </div>
+                                    <div onClick={() => { toggleSidebar(); navigate('/notifications'); }} className="p-4 bg-white/10 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-white/20 transition-colors">
+                                        <Bell size={20} />
+                                        <span className="font-medium">Notifications</span>
                                     </div>
                                 </div>
                             </div>
