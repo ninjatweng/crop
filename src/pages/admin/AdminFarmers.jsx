@@ -72,12 +72,13 @@ export default function AdminFarmers() {
 
     const handleStatusUpdate = (farmerId, newStatus) => {
         setFarmers(prev => prev.map(f => 
-            f.id === farmerId ? { ...f, is_active: newStatus } : f
+            (f.id === farmerId || f.user_id === farmerId) ? { ...f, is_active: newStatus } : f
         ));
     };
 
     const handleDeleteFarmer = (farmerId) => {
-        setFarmers(prev => prev.filter(f => f.id !== farmerId));
+        // Filter by both id and user_id to handle both integer and UUID
+        setFarmers(prev => prev.filter(f => f.id !== farmerId && f.user_id !== farmerId));
         setSelectedFarmer(null);
     };
 
