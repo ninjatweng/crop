@@ -603,9 +603,9 @@ app.get('/api/admin/farmers', authenticateToken, requireAdmin, async (req, res) 
 
         let query = `
             SELECT 
-                f.id, f.rsbsa_id, f.first_name, f.last_name, f.cellphone,
+                f.id, f.id as farmer_id, u.id as user_id, f.rsbsa_id, f.first_name, f.last_name, f.cellphone,
                 f.address_barangay, f.created_at,
-                fm.location_barangay, fm.farm_size_hectares,
+                fm.location_barangay, fm.location_sitio, fm.farm_size_hectares,
                 u.email, u.username, u.is_active,
                 (SELECT COUNT(*) FROM reports WHERE user_id = u.id) as report_count
             FROM farmers f
@@ -722,14 +722,59 @@ app.post('/api/admin/farmers', authenticateToken, requireAdmin, async (req, res)
 app.patch('/api/admin/farmers/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { isActive } = req.body;
-        await pool.execute(
-            `UPDATE users u 
-             JOIN farmers f ON u.id = f.user_id 
-             SET u.is_active = ? 
-             WHERE f.id = ?`,
-            [isActive, req.params.id]
-        );
+        const id = req.params.id;
+        const isUUID = id.includes('-');
+        
+        if (isUUID) {
+            // ID is user_id
+            await pool.execute(
+                `UPDATE users SET is_active = ? WHERE id = ?`,
+                [isActive, id]
+            );
+        } else {
+            // ID is farmer_id
+            await pool.execute(
+                `UPDATE users u 
+                 JOIN farmers f ON u.id = f.user_id 
+                 SET u.is_active = ? 
+                 WHERE f.id = ?`,
+                [isActive, id]
+            );
+        }
         res.json({ message: 'Farmer status updated' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get farmer reports (for admin farmer detail modal)
+app.get('/api/admin/farmers/:id/reports', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const isUUID = id.includes('-');
+        
+        let userId;
+        if (isUUID) {
+            userId = id;
+        } else {
+            const [farmerRows] = await pool.execute('SELECT user_id FROM farmers WHERE id = ?', [id]);
+            if (farmerRows.length === 0) {
+                return res.status(404).json({ error: 'Farmer not found' });
+            }
+            userId = farmerRows[0].user_id;
+        }
+        
+        const [reports] = await pool.execute(
+            `SELECT id, type, status, location, created_at 
+             FROM reports 
+             WHERE user_id = ? 
+             ORDER BY created_at DESC 
+             LIMIT 10`,
+            [userId]
+        );
+        
+        res.json({ reports });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
@@ -742,20 +787,37 @@ app.delete('/api/admin/farmers/:id', authenticateToken, requireAdmin, async (req
     try {
         await connection.beginTransaction();
         
-        const farmerId = req.params.id;
+        const id = req.params.id;
+        let farmerId, userId;
         
-        // Get farmer's user_id first
-        const [farmerRows] = await connection.execute(
-            'SELECT user_id FROM farmers WHERE id = ?',
-            [farmerId]
-        );
+        // Check if ID is a UUID (user_id) or integer (farmer_id)
+        const isUUID = id.includes('-');
         
-        if (farmerRows.length === 0) {
-            await connection.rollback();
-            return res.status(404).json({ error: 'Farmer not found' });
+        if (isUUID) {
+            // ID is user_id (UUID), find farmer by user_id
+            const [farmerRows] = await connection.execute(
+                'SELECT id, user_id FROM farmers WHERE user_id = ?',
+                [id]
+            );
+            if (farmerRows.length === 0) {
+                await connection.rollback();
+                return res.status(404).json({ error: 'Farmer not found' });
+            }
+            farmerId = farmerRows[0].id;
+            userId = farmerRows[0].user_id;
+        } else {
+            // ID is farmer_id (integer)
+            const [farmerRows] = await connection.execute(
+                'SELECT id, user_id FROM farmers WHERE id = ?',
+                [id]
+            );
+            if (farmerRows.length === 0) {
+                await connection.rollback();
+                return res.status(404).json({ error: 'Farmer not found' });
+            }
+            farmerId = farmerRows[0].id;
+            userId = farmerRows[0].user_id;
         }
-        
-        const userId = farmerRows[0].user_id;
         
         // Delete related records in order (respecting foreign keys)
         // 1. Delete reports by this user
