@@ -22,8 +22,17 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me';
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY || '';
 
+// CORS configuration for separate frontend/backend hosting
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const corsOptions = {
+    origin: [FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Increase payload limit for Base64 images
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(helmet({
     contentSecurityPolicy: false, // Disable CSP for serving frontend
     crossOriginEmbedderPolicy: false
@@ -31,7 +40,7 @@ app.use(helmet({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files from frontend dist folder
+// Serve static files from frontend dist folder (optional - for combined hosting)
 const distPath = join(__dirname, '../dist');
 app.use(express.static(distPath));
 
