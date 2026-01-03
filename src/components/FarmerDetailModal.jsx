@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, MapPin, Phone, Mail, Calendar, FileText, ToggleLeft, ToggleRight } from 'lucide-react';
+import { X, User, MapPin, Phone, Mail, Calendar, FileText, ToggleLeft, ToggleRight, Trash2, AlertTriangle } from 'lucide-react';
 import { useAuth, API_URL } from '../context/AuthContext';
 
-export default function FarmerDetailModal({ farmer, onClose, onStatusUpdate }) {
+export default function FarmerDetailModal({ farmer, onClose, onStatusUpdate, onDelete }) {
     const { token, isMockMode } = useAuth();
     const [loading, setLoading] = useState(false);
     const [farmerDetails, setFarmerDetails] = useState(farmer);
     const [reports, setReports] = useState([]);
     const [reportsLoading, setReportsLoading] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         if (farmer?.id && !isMockMode) {
@@ -85,6 +87,38 @@ export default function FarmerDetailModal({ farmer, onClose, onStatusUpdate }) {
             rejected: 'bg-red-100 text-red-700'
         };
         return styles[status] || 'bg-gray-100 text-gray-700';
+    };
+
+    const handleDelete = async () => {
+        setDeleteLoading(true);
+        
+        if (isMockMode) {
+            setTimeout(() => {
+                onDelete?.(farmer.id);
+                onClose();
+                setDeleteLoading(false);
+            }, 500);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/admin/farmers/${farmer.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to delete farmer');
+            }
+
+            onDelete?.(farmer.id);
+            onClose();
+        } catch (err) {
+            alert('Error deleting farmer: ' + err.message);
+        } finally {
+            setDeleteLoading(false);
+        }
     };
 
     if (!farmer) return null;
@@ -243,7 +277,14 @@ export default function FarmerDetailModal({ farmer, onClose, onStatusUpdate }) {
                 </div>
 
                 {/* Footer */}
-                <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
+                <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between">
+                    <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2"
+                    >
+                        <Trash2 size={16} />
+                        Delete Farmer
+                    </button>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
@@ -252,6 +293,62 @@ export default function FarmerDetailModal({ farmer, onClose, onStatusUpdate }) {
                     </button>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <AlertTriangle size={24} className="text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Delete Farmer Account</h3>
+                                <p className="text-sm text-gray-500">This action cannot be undone</p>
+                            </div>
+                        </div>
+                        
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                            <p className="text-sm text-red-800">
+                                You are about to permanently delete <strong>{farmerDetails.first_name} {farmerDetails.last_name}</strong>'s account. 
+                                This will also delete:
+                            </p>
+                            <ul className="text-sm text-red-700 mt-2 ml-4 list-disc">
+                                <li>All farm records</li>
+                                <li>All submitted reports ({reports.length} reports)</li>
+                                <li>User login credentials</li>
+                            </ul>
+                        </div>
+                        
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                disabled={deleteLoading}
+                                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={deleteLoading}
+                                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {deleteLoading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 size={16} />
+                                        Delete Permanently
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

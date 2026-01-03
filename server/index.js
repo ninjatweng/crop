@@ -736,6 +736,51 @@ app.patch('/api/admin/farmers/:id/status', authenticateToken, requireAdmin, asyn
     }
 });
 
+// Delete farmer and their associated data
+app.delete('/api/admin/farmers/:id', authenticateToken, requireAdmin, async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        
+        const farmerId = req.params.id;
+        
+        // Get farmer's user_id first
+        const [farmerRows] = await connection.execute(
+            'SELECT user_id FROM farmers WHERE id = ?',
+            [farmerId]
+        );
+        
+        if (farmerRows.length === 0) {
+            await connection.rollback();
+            return res.status(404).json({ error: 'Farmer not found' });
+        }
+        
+        const userId = farmerRows[0].user_id;
+        
+        // Delete related records in order (respecting foreign keys)
+        // 1. Delete reports by this user
+        await connection.execute('DELETE FROM reports WHERE user_id = ?', [userId]);
+        
+        // 2. Delete farms by this farmer
+        await connection.execute('DELETE FROM farms WHERE farmer_id = ?', [farmerId]);
+        
+        // 3. Delete farmer record
+        await connection.execute('DELETE FROM farmers WHERE id = ?', [farmerId]);
+        
+        // 4. Delete user account
+        await connection.execute('DELETE FROM users WHERE id = ?', [userId]);
+        
+        await connection.commit();
+        res.json({ message: 'Farmer and all associated data deleted successfully' });
+    } catch (err) {
+        await connection.rollback();
+        console.error('Delete farmer error:', err);
+        res.status(500).json({ error: 'Failed to delete farmer' });
+    } finally {
+        connection.release();
+    }
+});
+
 app.get('/api/admin/reports', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

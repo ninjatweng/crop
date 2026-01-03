@@ -76,6 +76,11 @@ export default function AdminFarmers() {
         ));
     };
 
+    const handleDeleteFarmer = (farmerId) => {
+        setFarmers(prev => prev.filter(f => f.id !== farmerId));
+        setSelectedFarmer(null);
+    };
+
     const filteredFarmers = farmers.filter(f => {
         const term = searchTerm.toLowerCase();
         return (
@@ -238,6 +243,7 @@ export default function AdminFarmers() {
                     farmer={selectedFarmer} 
                     onClose={() => setSelectedFarmer(null)}
                     onStatusUpdate={handleStatusUpdate}
+                    onDelete={handleDeleteFarmer}
                 />
             )}
 
